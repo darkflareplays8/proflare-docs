@@ -1,0 +1,42 @@
+---
+title: Examples
+description: Library usage and setup notes for ascii-stream.
+---
+
+## Use as a library
+
+```js
+import { playVideo } from "ascii-stream";
+
+await playVideo("video.mp4", {
+  ramp: "detailed",
+  fps: 15,
+  fill: false,
+});
+```
+
+## How it works
+
+1. `ffprobe` reads the source's resolution, frame rate, and duration
+2. the target ASCII resolution is fit to the terminal size, corrected for character cell aspect ratio
+3. `ffmpeg` decodes and scales the video directly to that resolution, streaming raw RGB frames
+4. each frame is converted to ASCII by brightness, with per-frame contrast stretching for clarity
+5. frames are written straight to the terminal at the source frame rate
+
+## Windows install notes
+
+Some npm configurations block install scripts by default (`allow-scripts`), which prevents `ffmpeg-static` from downloading its bundled binary. If `stream` runs but errors on ffmpeg, allow scripts and reinstall:
+
+```sh
+npm config set allow-scripts=true --location=user
+npm uninstall -g ascii-stream
+npm install -g ascii-stream
+```
+
+If the `stream` command isn't recognized after a global install, npm's global bin folder likely isn't on PATH. Check where it installs:
+
+```sh
+npm config get prefix
+```
+
+Add that folder to your PATH environment variable, then open a new terminal window.
