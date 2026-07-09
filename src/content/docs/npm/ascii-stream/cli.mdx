@@ -1,0 +1,39 @@
+---
+title: CLI Reference
+description: Command line flags for ascii-stream.
+---
+
+```sh
+stream <file> [options]
+```
+
+## Flags
+
+| flag | description |
+|---|---|
+| `--ramp <name>` | character set: `standard`, `detailed` (default), `blocks`, `minimal` |
+| `--fps <n>` | override playback frame rate |
+| `--fill` | stretch to fill the full terminal, ignoring aspect ratio |
+| `--help`, `-h` | show help |
+
+## Character ramps
+
+- **standard** — 10 characters, blocky gradient
+- **detailed** — 70 characters, finest gradient, best clarity (default)
+- **blocks** — `░▒▓█`, chunky pixel-art look, reads well on busy footage
+- **minimal** — 4 characters, abstract/stylized look
+
+## Examples
+
+```sh
+stream video.mp4
+stream video.mp4 --ramp blocks
+stream video.mp4 --fps 15
+stream video.mp4 --fill
+```
+
+## Getting clearer output
+
+The biggest factor isn't a flag — it's terminal size. More columns and rows means more character cells, which means more effective resolution. A larger window or smaller font gives a noticeably clearer picture than any ramp choice.
+
+`--ramp blocks` can also read more clearly than `detailed` on busy, high-motion footage, since solid blocks form recognizable shapes more easily than fine character noise at small sizes.
