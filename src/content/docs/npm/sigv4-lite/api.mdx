@@ -1,0 +1,59 @@
+---
+title: API Reference
+description: Full API reference for sigv4-lite.
+---
+
+## `signRequest(options)`
+
+Returns a headers object with `authorization`, `x-amz-date`, and `x-amz-content-sha256` set.
+
+| option | type | default | required |
+|---|---|---|---|
+| `method` | string | `"GET"` | no |
+| `url` | string | — | yes |
+| `headers` | object | `{}` | no |
+| `body` | string | `""` | no |
+| `accessKeyId` | string | — | yes |
+| `secretAccessKey` | string | — | yes |
+| `region` | string | — | yes |
+| `service` | string | `"s3"` | no |
+| `date` | Date | `new Date()` | no |
+
+```js
+import { signRequest } from "sigv4-lite";
+
+const headers = await signRequest({
+  method: "GET",
+  url: "https://my-bucket.s3.amazonaws.com/file.txt",
+  accessKeyId: "...",
+  secretAccessKey: "...",
+  region: "us-east-1",
+});
+```
+
+## `presignUrl(options)`
+
+Returns a signed URL string valid for `expiresIn` seconds. Useful for handing out temporary download links without exposing credentials.
+
+| option | type | default | required |
+|---|---|---|---|
+| `method` | string | `"GET"` | no |
+| `url` | string | — | yes |
+| `accessKeyId` | string | — | yes |
+| `secretAccessKey` | string | — | yes |
+| `region` | string | — | yes |
+| `service` | string | `"s3"` | no |
+| `expiresIn` | number | `3600` | no |
+| `date` | Date | `new Date()` | no |
+
+```js
+import { presignUrl } from "sigv4-lite";
+
+const url = await presignUrl({
+  url: "https://my-bucket.s3.amazonaws.com/file.txt",
+  accessKeyId: "...",
+  secretAccessKey: "...",
+  region: "us-east-1",
+  expiresIn: 3600,
+});
+```

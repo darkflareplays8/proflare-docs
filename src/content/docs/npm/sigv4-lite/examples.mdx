@@ -1,0 +1,70 @@
+---
+title: Examples
+description: Example usage of sigv4-lite with R2 and other S3-compatible services.
+---
+
+## Cloudflare Worker + R2
+
+```js
+import { signRequest, presignUrl } from "sigv4-lite";
+
+function r2Config(env) {
+  return {
+    accessKeyId: env.R2_ACCESS_KEY_ID,
+    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+    region: "auto",
+    endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    bucket: env.R2_BUCKET,
+  };
+}
+
+async function putObject(env, key, body, contentType) {
+  const { accessKeyId, secretAccessKey, region, endpoint, bucket } = r2Config(env);
+  const url = `${endpoint}/${bucket}/${key}`;
+
+  const headers = await signRequest({
+    method: "PUT",
+    url,
+    body,
+    accessKeyId,
+    secretAccessKey,
+    region,
+    headers: { "content-type": contentType },
+  });
+
+  return fetch(url, { method: "PUT", headers, body });
+}
+```
+
+## Presigned download link
+
+```js
+const link = await presignUrl({
+  url: `${endpoint}/${bucket}/${key}`,
+  accessKeyId,
+  secretAccessKey,
+  region: "auto",
+  expiresIn: 3600,
+});
+```
+
+## Testing against a public S3-compatible playground
+
+[play.min.io](https://play.min.io) runs a public MinIO demo server with openly published test credentials, useful for a quick sanity check without setting up a real bucket.
+
+```js
+import { signRequest } from "sigv4-lite";
+
+const base = {
+  accessKeyId: "Q3AM3UQ867SPQQA43P2F",
+  secretAccessKey: "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
+  region: "us-east-1",
+};
+
+const url = "https://play.min.io/my-bucket/hello.txt";
+
+const headers = await signRequest({ method: "PUT", url, body: "hi", ...base });
+await fetch(url, { method: "PUT", headers, body: "hi" });
+```
+
+This is a shared public server — don't store anything sensitive there.

@@ -1,0 +1,39 @@
+---
+title: sigv4-lite
+description: Minimal AWS SigV4 signer for runtimes without Node's crypto module.
+---
+
+AWS SigV4 signing for runtimes without Node's `crypto` module — Cloudflare Workers, Deno, Bun, browsers. Works with S3, R2, B2, Wasabi, and any other SigV4-compatible endpoint.
+
+Zero dependencies. Uses Web Crypto (`crypto.subtle`) only.
+
+By ProfessionalFlare.
+
+## Install
+
+```sh
+npm install sigv4-lite
+```
+
+## Quick start
+
+```js
+import { signRequest } from "sigv4-lite";
+
+const headers = await signRequest({
+  method: "PUT",
+  url: "https://my-bucket.s3.amazonaws.com/file.txt",
+  body: "hello world",
+  accessKeyId: env.ACCESS_KEY_ID,
+  secretAccessKey: env.SECRET_ACCESS_KEY,
+  region: "us-east-1",
+});
+
+await fetch("https://my-bucket.s3.amazonaws.com/file.txt", {
+  method: "PUT",
+  headers,
+  body: "hello world",
+});
+```
+
+See [API](/npm/sigv4-lite/api/) for the full reference and [Examples](/npm/sigv4-lite/examples/) for a Cloudflare Worker + R2 walkthrough.
